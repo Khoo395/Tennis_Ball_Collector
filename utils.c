@@ -1,11 +1,13 @@
 #include <math.h>
 
-const int BALL_FOUND = 1;
-const int BALL_NOT_FOUND = 0;
-const int OPPONENTS_FOUND = 1;
-const int BOUNDARIES_FOUND = 1;
+const bool BALL_FOUND = true;
+const bool BALL_NOT_FOUND = false;
+const bool OPPONENTS_FOUND = true;
+const bool BOUNDARIES_FOUND = true;
+const bool BALL_COLLECTED = false;
+const bool BALL_DISPENSED = false;
 
-int moving_forward()
+bool moving_forward()
 {
     clearTimer(T1); // start the timer
     while (time1(T1) < 10000)
@@ -49,4 +51,20 @@ void scan_boundaries()
 void avoid_boundaries()
 {
     if (IRSensorReading())
+}
+
+bool starting_procedure()
+{
+}
+
+bool spin_search()
+{
+}
+
+bool collect_ball()
+{
+}
+
+void dispense_ball()
+{
 }
