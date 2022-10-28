@@ -15,6 +15,7 @@
 #pragma config(Sensor, dgtl10, front_r_line, sensorDigitalIn)
 #pragma config(Sensor, dgtl11, back_l_line, sensorDigitalIn)
 #pragma config(Sensor, dgtl12, back_r_line, sensorDigitalIn)
+#pragma config(Sensor, dgtl13, ball_status, sensorDigitalIn)
 
 enum Orientation {
     NORTH,
@@ -58,22 +59,37 @@ float read_short_sharp(){
     return 11.16*pow(voltage,-1.191);
 }
 
+float is_gate_opened(){
+    //Needs adjustment according to limit switch placement and configuration
+    return !SensorValue(ball_dispense_1); 
+}
+
+float is_gate_closed(){
+    //Needs adjustment according to limit switch placement and configuration
+    return !SensorValue(ball_dispense_2); 
+}
+
+float is_ball_on_vehicle(){
+    //Needs adjustment according to limit switch configuration
+    return SensorValue(is_ball_on_vehicle); 
+}
+
 BoundarySide scan_boundary(){
     int frontLeft = SensorValue(front_l_line);
     int frontRight = SensorValue(front_r_line);
     int backLeft = SensorValue(back_l_line);
     int backRight = SensorValue(back_r_line);
 
-    if(frontLeft == 1){
+    if(frontLeft == 0){
         return FRONT_LEFT;
     }
-    else if(frontRight ==1){
+    else if(frontRight ==0){
         return FRONT_RIGHT;
     }
-    else if(backLeft == 1){
+    else if(backLeft == 0){
         return BACK_LEFT;
     }
-    else if(backRight == 1){
+    else if(backRight == 0){
         return BACK_RIGHT; 
     }
     else{
