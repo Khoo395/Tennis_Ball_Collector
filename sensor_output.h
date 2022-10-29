@@ -9,13 +9,12 @@
 #pragma config(Sensor, dgtl4, compass4, sensorDigitalIn)
 #pragma config(Sensor, dgtl5, home_limit_l, sensorDigitalIn)
 #pragma config(Sensor, dgtl6, home_limit_r, sensorDigitalIn)
-#pragma config(Sensor, dgtl7, ball_dispense_1, sensorDigitalIn)
-#pragma config(Sensor, dgtl8, ball_dispense_2, sensorDigitalIn)
+#pragma config(Sensor, dgtl7, ball_dispense, sensorDigitalIn)
+#pragma config(Sensor, dgtl13, ball_status, sensorDigitalIn)
 #pragma config(Sensor, dgtl9, front_l_line, sensorDigitalIn)
 #pragma config(Sensor, dgtl10, front_r_line, sensorDigitalIn)
 #pragma config(Sensor, dgtl11, back_l_line, sensorDigitalIn)
 #pragma config(Sensor, dgtl12, back_r_line, sensorDigitalIn)
-#pragma config(Sensor, dgtl13, ball_status, sensorDigitalIn)
 
 enum Orientation {
     NORTH,
@@ -59,19 +58,14 @@ float read_short_sharp(){
     return 11.16*pow(voltage,-1.191);
 }
 
-float is_gate_opened(){
-    //Needs adjustment according to limit switch placement and configuration
-    return !SensorValue(ball_dispense_1); 
-}
-
 float is_gate_closed(){
     //Needs adjustment according to limit switch placement and configuration
-    return !SensorValue(ball_dispense_2); 
+    return !SensorValue(ball_dispense); 
 }
 
 float is_ball_on_vehicle(){
     //Needs adjustment according to limit switch configuration
-    return SensorValue(is_ball_on_vehicle); 
+    return SensorValue(ball_status); 
 }
 
 BoundarySide scan_boundary(){
