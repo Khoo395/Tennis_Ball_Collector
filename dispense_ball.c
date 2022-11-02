@@ -24,28 +24,10 @@
 #include "sensor_output.h"
 #include "motor_control.h"
 #include "avoid_boundaries.c"
-Orientation compass_status;
 
 task main(){
-while (1)
-{
-    compass_status = read_compass();
-    if (compass_status != 4)
-    {
-        if (compass_status == 9){
-            writeDebugStreamLine("%s", "sth wrong");
-        }
-        if (compass_status >= 5)
-        {
-            control_motor(-30, 30);
-        }
-        else if (compass_status <=3){
-            control_motor(30, -30);
-        }
-
-    }
-    else if (compass_status ==4){
-        stop_motor();
-    }
-}
+	open_dispense_gate();
+	motor(ball_dispense_driver) = 0;
+	sleep(1000);
+	close_dispense_gate();
 }
