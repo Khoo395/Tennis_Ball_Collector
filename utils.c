@@ -1,4 +1,5 @@
 #include <math.h>
+#include <stdbool.h>
 
 const bool BALL_FOUND = true;
 const bool BALL_NOT_FOUND = false;

@@ -1,21 +1,36 @@
-#include "motor_control.h"
-#include "sensor_output.h"
+void collect_ball()
+{
+    writeDebugStreamLine("%s", "collecting ball...");
+    // activate roller
+    activate_roller(127);
 
-int  collect_ball(){
-    activate_roller();
-    move_forward();
-    clearTimer(T1); 
-    while(time1(T1) < 10000){
-        if(is_ball_on_vehicle() == 1){
+    // move forward
+    // max speed will go out of boundaries
+
+    clearTimer(T1);
+    while (time1(T1) < 4000)
+    {
+        control_motor(80, 80);
+        is_ball_on_vehicle();
+        if (ball_collected == 1)
+        {
+            writeDebugStreamLine("%s", "ball collected");
             stop_roller();
-            move_stop();
-            return 1; 
+            stop_motor();
+            return;
         }
-        else if(scan_boundary()!= NO_BOUNDARY_DETECTED){
-            // Do boundary Avoidance 
+
+        // scan boundaries
+        scan_boundary();
+        if (line_sensor_status != NO_BOUNDARY_DETECTED)
+        {
+            avoid_boundaries(line_sensor_status);
         }
     }
     stop_roller();
-    move_stop();
-    return 0; 
+    stop_motor();
+    ball_found = 0;
+    ball_collected = 0;
+    writeDebugStreamLine("%s", "ball not collected");
+    return;
 }

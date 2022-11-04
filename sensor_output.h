@@ -1,34 +1,19 @@
-#pragma config(Sensor, in1, sharp_front_top, sensorAnalog)
-#pragma config(Sensor, in2, sharp_front_bottom_l, sensorAnalog)
-#pragma config(Sensor, in3, sharp_front_bottom_r, sensorAnalog)
-#pragma config(Sensor, in4, sharp_short, sensorAnalog)
-#pragma config(Sensor, in8, compass_power, sensorNone)
-#pragma config(Sensor, dgtl1, compass1, sensorDigitalIn)
-#pragma config(Sensor, dgtl2, compass2, sensorDigitalIn)
-#pragma config(Sensor, dgtl3, compass3, sensorDigitalIn)
-#pragma config(Sensor, dgtl4, compass4, sensorDigitalIn)
-#pragma config(Sensor, dgtl5, home_limit_l, sensorDigitalIn)
-#pragma config(Sensor, dgtl6, home_limit_r, sensorDigitalIn)
-#pragma config(Sensor, dgtl7, ball_dispense, sensorDigitalIn)
-#pragma config(Sensor, dgtl13, ball_status, sensorDigitalIn)
-#pragma config(Sensor, dgtl9, front_l_line, sensorDigitalIn)
-#pragma config(Sensor, dgtl10, front_r_line, sensorDigitalIn)
-#pragma config(Sensor, dgtl11, back_l_line, sensorDigitalIn)
-#pragma config(Sensor, dgtl12, back_r_line, sensorDigitalIn)
-
-enum Orientation {
-    NORTH,
-    NORTH_EAST,
-    EAST,
-    SOUTH_EAST,
-    SOUTH,
-    SOUTH_WEST,
-    WEST,
-    NORTH_WEST,
-    INVALID_COMBINATION
+// enum
+enum Orientation
+{
+    NORTH,              // 0
+    NORTH_EAST,         // 1
+    EAST,               // 2
+    SOUTH_EAST,         // 3
+    SOUTH,              // 4
+    SOUTH_WEST,         // 5
+    WEST,               // 6
+    NORTH_WEST,         // 7
+    INVALID_COMBINATION // 8
 };
 
-enum BoundarySide {
+enum BoundarySide
+{
     FRONT_LEFT,
     FRONT_RIGHT,
     BACK_LEFT,
@@ -36,87 +21,183 @@ enum BoundarySide {
     NO_BOUNDARY_DETECTED
 };
 
-float sensor_value_to_distance(float sensor_value){
-    float voltage = sensor_value / 4096 * 5;
-    return 26.758*pow(voltage,-1.376);
+// sharp sensor parameter
+int top_detection_value = 1100;
+int bottom_detection_value = 550;
+
+// distance
+float dist_ft;
+float dist_bl;
+float dist_br;
+float dist_back;
+
+// ball status
+int ball_found = 0;
+int ball_collected = 0;
+
+// compass status
+int compass_status;
+int goal_compass_status;
+
+// limit_switch_status
+int dispense_limit_status;
+int dispense_limit_switch_voltage; // analog
+
+// line_sensor_status
+BoundarySide line_sensor_status;
+
+// // TBC
+// const bool BALL_FOUND = true;
+// const bool BALL_NOT_FOUND = false;
+// const bool BALL_COLLECTED = true;
+// const bool BALL_NOT_COLLECTED = false;
+
+void read_sharp_front_top()
+{
+    dist_ft = SensorValue(sharp_front_top);
+    return;
 }
 
-float read_sharp_front_top(){
-    return sensor_value_to_distance(SensorValue(sharp_front_top));
+void read_sharp_front_bottom_l()
+{
+    dist_bl = SensorValue(sharp_front_bottom_l);
+    return;
 }
 
-float read_sharp_front_bottom_l(){
-    return sensor_value_to_distance(SensorValue(sharp_front_bottom_l));
+void read_sharp_front_bottom_r()
+{
+    dist_br = SensorValue(sharp_front_bottom_r);
+    return;
 }
 
-float read_sharp_front_bottom_r(){
-    return sensor_value_to_distance(SensorValue(sharp_front_bottom_r));
+void read_short_sharp()
+{
+    dist_back = SensorValue(sharp_short);
+    return;
 }
 
-float read_short_sharp(){
-    float voltage = SensorValue(sharp_short) / 4096 * 5;
-    return 11.16*pow(voltage,-1.191);
+void read_dispense_limit_switch()
+{
+    // analog limit switch
+    dispense_limit_switch_voltage = SensorValue(dispense_limit_switch);
+    if (dispense_limit_switch_voltage != 0)
+    {
+        dispense_limit_status = 1;
+        return;
+    }
+    else
+    {
+        dispense_limit_status = 0;
+        return;
+    }
 }
 
-float is_gate_closed(){
-    //Needs adjustment according to limit switch placement and configuration
-    return !SensorValue(ball_dispense); 
+void is_ball_on_vehicle()
+{
+    if (SensorValue(ball_collection_limit) == 0)
+    {
+        ball_collected = 1;
+        return;
+    }
+    else
+    {
+        ball_collected = 0;
+        return;
+    }
 }
 
-float is_ball_on_vehicle(){
-    //Needs adjustment according to limit switch configuration
-    return SensorValue(ball_status); 
-}
-
-BoundarySide scan_boundary(){
+void scan_boundary()
+{
     int frontLeft = SensorValue(front_l_line);
     int frontRight = SensorValue(front_r_line);
     int backLeft = SensorValue(back_l_line);
     int backRight = SensorValue(back_r_line);
-
-    if(frontLeft == 0){
-        return FRONT_LEFT;
+    
+    if (frontLeft < 800)
+    {
+        line_sensor_status = FRONT_LEFT;
+        return;
     }
-    else if(frontRight ==0){
-        return FRONT_RIGHT;
+    else if (frontRight == 0)
+    {
+        line_sensor_status = FRONT_RIGHT;
+        return;
     }
-    else if(backLeft == 0){
-        return BACK_LEFT;
+    else if (backLeft == 0)
+    {
+        line_sensor_status = BACK_LEFT;
+        return;
     }
-    else if(backRight == 0){
-        return BACK_RIGHT; 
+    else if (backRight == 0)
+    {
+        line_sensor_status = BACK_RIGHT;
+        return;
     }
-    else{
-        return NO_BOUNDARY_DETECTED; 
+    else
+    {
+        line_sensor_status = NO_BOUNDARY_DETECTED;
+        return;
     }
 }
 
-Orientation read_compass(){
- int pin1 = SensorValue(compass1); 
- int pin2 = SensorValue(compass2); 
- int pin3 = SensorValue(compass3); 
- int pin4 = SensorValue(compass4); 
- int combination = pin1 * 1000 + pin2 * 100 + pin3 * 10 + pin4; 
+void read_compass()
+{
+    int pin1 = SensorValue(compass1);
+    int pin2 = SensorValue(compass2);
+    int pin3 = SensorValue(compass3);
+    int pin4 = SensorValue(compass4);
+    int combination = pin1 * 1000 + pin2 * 100 + pin3 * 10 + pin4;
 
- switch (combination)
- {
- case 1110:
-    return NORTH;
- case 1100:
-    return NORTH_EAST;
- case 1101:
-    return EAST; 
- case 1001:
-    return SOUTH_EAST;
- case 1011:
-    return SOUTH;
- case 0011:
-    return SOUTH_WEST;
- case 0111:
-    return WEST;
- case 0110:
-    return NORTH_WEST;
- default:
-    return INVALID_COMBINATION;
- }
+    switch (combination)
+    {
+    case 1110:
+        compass_status = NORTH;
+        return;
+    case 1100:
+        compass_status = NORTH_EAST;
+        return;
+    case 1101:
+        compass_status = EAST;
+        return;
+    case 1001:
+        compass_status = SOUTH_EAST;
+        return;
+    case 1011:
+        compass_status = SOUTH;
+        return;
+    case 0011:
+        compass_status = SOUTH_WEST;
+        return;
+    case 0111:
+        compass_status = WEST;
+        return;
+    case 0110:
+        compass_status = NORTH_WEST;
+        return;
+    default:
+        compass_status = INVALID_COMBINATION;
+        return;
+    }
+}
+
+void scan_ball()
+{
+    if (SensorValue(sharp_front_bottom_l) > bottom_detection_value || SensorValue(sharp_front_bottom_r) > bottom_detection_value)
+    {
+        if (SensorValue(sharp_front_top) < top_detection_value)
+        {
+            ball_found = 1;
+            return;
+        }
+        else
+        {
+            ball_found = 0;
+            return;
+        }
+    }
+    else
+    {
+        ball_found = 0;
+        return;
+    }
 }
