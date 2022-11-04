@@ -1,19 +1,4 @@
-float dist_ft;
-float dist_bl;
-float dist_br;
-float dist_back;
-int dispense_limit_switch_voltage;
-const bool BALL_FOUND = true;
-const bool BALL_NOT_FOUND = false;
-const bool BALL_COLLECTED = true;
-const bool BALL_NOT_COLLECTED = false;
-// according to sharp sensor calibration (search distance)
-int top_detection_value = 1100;
-int bottom_detection_value = 550;
-int compass_status;
-int dispense_limit_status;
-bool ball_identified;
-
+// enum
 enum Orientation
 {
     NORTH,              // 0
@@ -35,97 +20,127 @@ enum BoundarySide
     BACK_RIGHT,
     NO_BOUNDARY_DETECTED
 };
+
+// sharp sensor parameter
+int top_detection_value = 1100;
+int bottom_detection_value = 550;
+
+// distance
+float dist_ft;
+float dist_bl;
+float dist_br;
+float dist_back;
+
+// ball status
+int ball_found = 0;
+int ball_collected = 0;
+
+// compass status
+int compass_status;
+int goal_compass_status;
+
+// limit_switch_status
+int dispense_limit_status;
+int dispense_limit_switch_voltage; // analog
+
+// line_sensor_status
 BoundarySide line_sensor_status;
 
-float read_sharp_front_top()
+// // TBC
+// const bool BALL_FOUND = true;
+// const bool BALL_NOT_FOUND = false;
+// const bool BALL_COLLECTED = true;
+// const bool BALL_NOT_COLLECTED = false;
+
+void read_sharp_front_top()
 {
     dist_ft = SensorValue(sharp_front_top);
-    writeDebugStreamLine("top: %d", dist_ft);
-    return dist_ft;
-    // return SensorValue(sharp_front_top);
+    return;
 }
 
-float read_sharp_front_bottom_l()
+void read_sharp_front_bottom_l()
 {
     dist_bl = SensorValue(sharp_front_bottom_l);
-    writeDebugStreamLine("bottom left: %d", dist_bl);
-    return dist_bl;
-    // return SensorValue(sharp_front_bottom_l);
+    return;
 }
 
-float read_sharp_front_bottom_r()
+void read_sharp_front_bottom_r()
 {
     dist_br = SensorValue(sharp_front_bottom_r);
-    writeDebugStreamLine("bottom right: %d", dist_br);
-    return dist_br;
-    // return SensorValue(sharp_front_bottom_r);
+    return;
 }
 
-float read_short_sharp()
+void read_short_sharp()
 {
     dist_back = SensorValue(sharp_short);
-    return dist_back;
+    return;
 }
 
-int read_dispense_limit_switch()
+void read_dispense_limit_switch()
 {
+    // analog limit switch
     dispense_limit_switch_voltage = SensorValue(dispense_limit_switch);
     if (dispense_limit_switch_voltage != 0)
     {
-        return 1;
+        dispense_limit_status = 1;
+        return;
     }
     else
     {
-        return 0;
+        dispense_limit_status = 0;
+        return;
     }
 }
 
-int is_ball_on_vehicle()
+void is_ball_on_vehicle()
 {
     if (SensorValue(ball_collection_limit) == 0)
     {
-        return BALL_COLLECTED;
+        ball_collected = 1;
+        return;
     }
     else
     {
-        return BALL_NOT_COLLECTED;
+        ball_collected = 0;
+        return;
     }
 }
-BoundarySide scan_boundary()
+
+void scan_boundary()
 {
     int frontLeft = SensorValue(front_l_line);
     int frontRight = SensorValue(front_r_line);
     int backLeft = SensorValue(back_l_line);
     int backRight = SensorValue(back_r_line);
 
-    if (frontLeft > 1800)
+    if (frontLeft < 800)
     {
-        writeDebugStreamLine("%s", "FRONT_LEFT");
-        return FRONT_LEFT;
+        line_sensor_status = FRONT_LEFT;
+        return;
     }
-    else if (frontRight == 1)
+    else if (frontRight == 0)
     {
-        writeDebugStreamLine("%s", "FRONT_RIGHT");
-        return FRONT_RIGHT;
+        line_sensor_status = FRONT_RIGHT;
+        return;
     }
-    else if (backLeft == 1)
+    else if (backLeft == 0)
     {
-        writeDebugStreamLine("%s", "BACK_LEFT");
-        return BACK_LEFT;
+        line_sensor_status = BACK_LEFT;
+        return;
     }
-    else if (backRight == 1)
+    else if (backRight == 0)
     {
-        writeDebugStreamLine("%s", "BACK_RIGHT");
-        return BACK_RIGHT;
+        line_sensor_status = BACK_RIGHT;
+        return;
     }
     else
     {
-        writeDebugStreamLine("%s", "NO_BOUNDARY_DETECTED");
-        return NO_BOUNDARY_DETECTED;
+        line_sensor_status = NO_BOUNDARY_DETECTED;
+        return;
     }
 }
 
-Orientation read_compass()
+void read_compass()
 {
     int pin1 = SensorValue(compass1);
     int pin2 = SensorValue(compass2);
@@ -136,50 +151,53 @@ Orientation read_compass()
     switch (combination)
     {
     case 1110:
-        writeDebugStreamLine("%s", "NORTH");
-        return NORTH;
+        compass_status = NORTH;
+        return;
     case 1100:
-        writeDebugStreamLine("%s", "NORTH_EAST");
-        return NORTH_EAST;
+        compass_status = NORTH_EAST;
+        return;
     case 1101:
-        writeDebugStreamLine("%s", "EAST");
-        return EAST;
+        compass_status = EAST;
+        return;
     case 1001:
-        writeDebugStreamLine("%s", "SOUTH_EAST");
-        return SOUTH_EAST;
+        compass_status = SOUTH_EAST;
+        return;
     case 1011:
-        writeDebugStreamLine("%s", "SOUTH");
-        return SOUTH;
+        compass_status = SOUTH;
+        return;
     case 0011:
-        writeDebugStreamLine("%s", "SOUTH_WEST");
-        return SOUTH_WEST;
+        compass_status = SOUTH_WEST;
+        return;
     case 0111:
-        writeDebugStreamLine("%s", "WEST");
-        return WEST;
+        compass_status = WEST;
+        return;
     case 0110:
-        writeDebugStreamLine("%s", "NORTH_WEST");
-        return NORTH_WEST;
+        compass_status = NORTH_WEST;
+        return;
     default:
-        writeDebugStreamLine("%s", "INVALID_COMBINATION");
-        return INVALID_COMBINATION;
+        compass_status = INVALID_COMBINATION;
+        return;
     }
 }
 
-bool scan_ball()
+void scan_ball()
 {
     if (SensorValue(sharp_front_bottom_l) > bottom_detection_value || SensorValue(sharp_front_bottom_r) > bottom_detection_value)
     {
         if (SensorValue(sharp_front_top) < top_detection_value)
         {
-            return BALL_FOUND;
+            ball_found = 1;
+            return;
         }
         else
         {
-            return BALL_NOT_FOUND;
+            ball_found = 0;
+            return;
         }
     }
     else
     {
-        return BALL_NOT_FOUND;
+        ball_found = 0;
+        return;
     }
 }

@@ -1,23 +1,27 @@
-bool moving_forward()
+void moving_forward()
 {
+    writeDebugStreamLine("%s", "moving forward");
     clearTimer(T3);
+    // move forward
     control_motor(100, 100);
     while (time1(T3) < 2500)
     {
         // scan ball
-        if (scan_ball() == BALL_FOUND)
+        if (ball_found == 1)
         {
             stop_motor();
-            return BALL_FOUND;
+            writeDebugStreamLine("%s", "ball found in moving forward");
+            return;
         }
 
         // scan boundaries
-        line_sensor_status = scan_boundary();
-        if (scan_boundary() != NO_BOUNDARY_DETECTED)
+        scan_boundary();
+        if (line_sensor_status != NO_BOUNDARY_DETECTED)
         {
             avoid_boundaries(line_sensor_status);
         }
     }
     stop_motor();
-    return BALL_NOT_FOUND;
+    ball_found = 0;
+    return;
 }

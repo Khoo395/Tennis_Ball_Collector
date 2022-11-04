@@ -1,14 +1,14 @@
 // int sharp_short_threshold = 1100;
-
-bool back_to_origin()
+void back_to_origin()
 {
+    writeDebugStreamLine("%s", "activate back to origin");
     while (1)
     {
         turn_to_south_position();
         control_motor(-127, -82);
         // scan boundaries
-        line_sensor_status = scan_boundary();
-        if (scan_boundary() != NO_BOUNDARY_DETECTED)
+        scan_boundary();
+        if (line_sensor_status != NO_BOUNDARY_DETECTED)
         {
             avoid_boundaries(line_sensor_status);
             clearTimer(T2);
@@ -32,7 +32,8 @@ bool back_to_origin()
                 motor[left_driver] = -40;
             }
             motor[left_driver] = 0;
-            return true;
+            writeDebugStreamLine("%s", "i am at the origin");
+            return;
         }
     }
 }

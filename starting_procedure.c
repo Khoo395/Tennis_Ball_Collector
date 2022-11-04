@@ -1,31 +1,30 @@
+// parameters for starting
+float sp_time = 4500; // how long should the robot move forward when starting
+float sp_speed = 127; // max speed in competition
 
-
-bool starting_procedure()
+void starting_procedure()
 {
-    // parameters for starting
-    float sp_time = 1000; // how long should the robot move forward when starting
-    float sp_speed = 127; // max speed in competition
-
     float starting_sp_time = nSysTime;
     float sp_time_elapsed = 0;
-
-    // Declare variables
     float total_boundary_time = 0;
     float current_time = 0;
 
     // loop
     while (1)
     {
+        writeDebugStreamLine("%s", "starting procedure...");
+        // move forward
         control_motor(sp_speed, sp_speed - 45);
-        ball_identified = scan_ball();
-        if (ball_identified == BALL_FOUND)
+        scan_ball();
+        if (ball_found == 1)
         {
+            writeDebugStreamLine("%s", "ball found from starting procedure");
             stop_motor();
-            return BALL_FOUND;
+            return;
         }
 
         // Scan for boundaries
-        line_sensor_status = scan_boundary();
+        scan_boundary();
         if (line_sensor_status != NO_BOUNDARY_DETECTED)
         {
             avoid_boundaries(line_sensor_status);
@@ -36,10 +35,12 @@ bool starting_procedure()
 
         current_time = nSysTime;
         sp_time_elapsed = current_time - starting_sp_time - total_boundary_time;
+        writeDebugStreamLine("%d", sp_time_elapsed);
         if (sp_time_elapsed > sp_time)
         {
             stop_motor();
-            return BALL_NOT_FOUND;
+            ball_found = 0;
+            return;
         }
     }
 }
