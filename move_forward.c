@@ -1,29 +1,23 @@
-#include "motor_control.h"
-#include "sensor_output.h"
-#include "helper_function.h"
-
-const int BALL_FOUND = 1;
-const int BALL_NOT_FOUND = 0;
-enum BoundarySide
-{
-    FRONT_LEFT,
-    FRONT_RIGHT,
-    BACK_LEFT,
-    BACK_RIGHT,
-    NO_BOUNDARY_DETECTED
-};
-void move_forward()
+bool moving_forward()
 {
     clearTimer(T3);
-    while (time1(T3) < 10000)
+    control_motor(100, 100);
+    while (time1(T3) < 2500)
     {
-        move_forward();
+        // scan ball
         if (scan_ball() == BALL_FOUND)
         {
+            stop_motor();
             return BALL_FOUND;
         }
-        else if (scan_boundary() != NO_BOUNDARY_DETECTED)
+
+        // scan boundaries
+        line_sensor_status = scan_boundary();
+        if (scan_boundary() != NO_BOUNDARY_DETECTED)
         {
+            avoid_boundaries(line_sensor_status);
         }
     }
+    stop_motor();
+    return BALL_NOT_FOUND;
 }
