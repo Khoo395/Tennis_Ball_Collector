@@ -7,7 +7,7 @@ void avoid_boundaries(BoundarySide line_sensor_number)
         while (time1(T2) < 1000)
         {
             // move backward
-            control_motor(-60, -60);
+            control_motor(-45, -45);
         }
         clearTimer(T2);
         while (time1(T2) < 1200)
@@ -43,7 +43,7 @@ void avoid_boundaries(BoundarySide line_sensor_number)
         while (time1(T2) < 1000)
         {
             // move backward
-            control_motor(-60, -60);
+            control_motor(-45, -45);
         }
         clearTimer(T2);
         while (time1(T2) < 1200)

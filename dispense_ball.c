@@ -5,4 +5,5 @@ void dispense_ball()
 	close_dispense_gate();
 	ball_found = 0;
 	ball_collected = 0;
+	starting_procedure();
 }
