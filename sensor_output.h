@@ -112,7 +112,7 @@ void scan_boundary()
     int frontRight = SensorValue(front_r_line);
     int backLeft = SensorValue(back_l_line);
     int backRight = SensorValue(back_r_line);
-
+    
     if (frontLeft < 800)
     {
         line_sensor_status = FRONT_LEFT;
