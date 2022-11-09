@@ -31,8 +31,6 @@ void starting_procedure()
             total_boundary_time += 1500;
         }
 
-        //        scan_opponents()
-
         current_time = nSysTime;
         sp_time_elapsed = current_time - starting_sp_time - total_boundary_time;
         writeDebugStreamLine("%d", sp_time_elapsed);

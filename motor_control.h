@@ -75,27 +75,30 @@ void turn_to_south_position()
     while (1)
     {
         read_compass();
-        writeDebugStreamLine("%s", "compass_status");
-        if (compass_status != 4)
+        for (int i = 0; i < 10; i++)
         {
-            if (compass_status == 9)
+            writeDebugStreamLine("%d", compass_status);
+            if (compass_status != 4)
             {
-                read_compass();
+                if (compass_status == 9)
+                {
+                    read_compass();
+                }
+                if (compass_status >= 5)
+                {
+                    control_motor(-45, 45);
+                }
+                else if (compass_status <= 3)
+                {
+                    control_motor(45, -45);
+                }
             }
-            if (compass_status > 5)
+            else if (compass_status == 4)
             {
-                control_motor(-50, 50);
+                stop_motor();
+                writeDebugStreamLine("%s", "turned to south position");
+                return;
             }
-            else if (compass_status < 3)
-            {
-                control_motor(50, -50);
-            }
-        }
-        else if (compass_status == 4 || compass_status == 3 || compass_status == 5)
-        {
-            stop_motor();
-            writeDebugStreamLine("%s", "turned to south position");
-            return;
         }
     }
 }

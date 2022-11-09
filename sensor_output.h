@@ -23,7 +23,7 @@ enum BoundarySide
 
 // sharp sensor parameter
 int top_detection_value = 1100;
-int bottom_detection_value = 550;
+int bottom_detection_value = 800;
 
 // distance
 float dist_ft;
@@ -46,11 +46,8 @@ int dispense_limit_switch_voltage; // analog
 // line_sensor_status
 BoundarySide line_sensor_status;
 
-// // TBC
-// const bool BALL_FOUND = true;
-// const bool BALL_NOT_FOUND = false;
-// const bool BALL_COLLECTED = true;
-// const bool BALL_NOT_COLLECTED = false;
+// spin_search alternation
+int spin_CCW = 0;
 
 void read_sharp_front_top()
 {
@@ -112,7 +109,7 @@ void scan_boundary()
     int frontRight = SensorValue(front_r_line);
     int backLeft = SensorValue(back_l_line);
     int backRight = SensorValue(back_r_line);
-    
+
     if (frontLeft < 800)
     {
         line_sensor_status = FRONT_LEFT;

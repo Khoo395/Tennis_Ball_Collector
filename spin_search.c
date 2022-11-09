@@ -13,8 +13,8 @@ void spin_search()
         goal_compass_status = 2;
     }
 
-    // Rotate CCW
-    control_motor(-60, 60);
+    // Rotate CW
+    control_motor(60, -60);
     while (1)
     {
         // Scan for ball
@@ -43,6 +43,4 @@ void spin_search()
             }
         }
     }
-    //
-    //        scan_opponents()
 }

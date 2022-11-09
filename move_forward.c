@@ -4,7 +4,7 @@ void moving_forward()
     clearTimer(T3);
     // move forward
     control_motor(100, 100);
-    while (time1(T3) < 2500)
+    while (time1(T3) < 4000)
     {
         // scan ball
         if (ball_found == 1)
