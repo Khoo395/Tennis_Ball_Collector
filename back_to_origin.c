@@ -21,22 +21,25 @@ void back_to_origin()
                     control_motor(-127, -82);
                 }
             }
-
-            if (SensorValue(home_limit_r) == 0 || SensorValue(home_limit_l) == 0)
+            clearTimer(T2);
+            while (time1(T2) < 5000)
             {
-                stop_motor();
-                while (SensorValue(home_limit_r) != 0)
+                if (SensorValue(home_limit_r) == 0 || SensorValue(home_limit_l) == 0)
                 {
-                    motor[right_driver] = -40;
+                    stop_motor();
+                    while (SensorValue(home_limit_r) != 0)
+                    {
+                        motor[right_driver] = -40;
+                    }
+                    motor[right_driver] = 0;
+                    while (SensorValue(home_limit_l) != 0)
+                    {
+                        motor[left_driver] = -40;
+                    }
+                    motor[left_driver] = 0;
+                    writeDebugStreamLine("%s", "i am at the origin");
+                    return;
                 }
-                motor[right_driver] = 0;
-                while (SensorValue(home_limit_l) != 0)
-                {
-                    motor[left_driver] = -40;
-                }
-                motor[left_driver] = 0;
-                writeDebugStreamLine("%s", "i am at the origin");
-                return;
             }
         }
     }

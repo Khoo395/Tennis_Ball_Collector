@@ -49,12 +49,6 @@ BoundarySide line_sensor_status;
 // spin_search alternation
 int spin_CCW = 0;
 
-// // TBC
-// const bool BALL_FOUND = true;
-// const bool BALL_NOT_FOUND = false;
-// const bool BALL_COLLECTED = true;
-// const bool BALL_NOT_COLLECTED = false;
-
 void read_sharp_front_top()
 {
     dist_ft = SensorValue(sharp_front_top);
@@ -115,7 +109,7 @@ void scan_boundary()
     int frontRight = SensorValue(front_r_line);
     int backLeft = SensorValue(back_l_line);
     int backRight = SensorValue(back_r_line);
-    
+
     if (frontLeft < 800)
     {
         line_sensor_status = FRONT_LEFT;

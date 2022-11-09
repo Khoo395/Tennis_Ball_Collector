@@ -13,19 +13,7 @@ void spin_search()
         goal_compass_status = 2;
     }
 
-    // // Rotate CCW
-    // if (spin_CCW == 1)
-    // {
-    //     // Rotate CW
-    //     control_motor(60, -60);
-    //     spin_CCW = 0;
-    // }
-    // else if (spin_CCW == 0)
-    // {
-    //     // Rotate CCW
-    //     control_motor(-60, 60);
-    //     spin_CCW = 1;
-    // }
+    // Rotate CW
     control_motor(60, -60);
     while (1)
     {
@@ -55,6 +43,4 @@ void spin_search()
             }
         }
     }
-    //
-    //        scan_opponents()
 }
