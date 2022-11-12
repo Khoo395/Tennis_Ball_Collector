@@ -33,6 +33,8 @@ void spin_search()
                 avoid_boundaries(line_sensor_status);
             }
 
+            avoid_opponent();
+
             // turning for 360
             read_compass();
             if (compass_status == goal_compass_status)
