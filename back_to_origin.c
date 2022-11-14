@@ -21,6 +21,7 @@ void back_to_origin()
                     control_motor(-127, -82);
                 }
             }
+            avoid_back_opponent();
             clearTimer(T2);
             while (time1(T2) < 5000)
             {

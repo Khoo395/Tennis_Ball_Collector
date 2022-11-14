@@ -30,7 +30,7 @@ void starting_procedure()
             avoid_boundaries(line_sensor_status);
             total_boundary_time += 1500;
         }
-        avoid_opponent(); 
+        avoid_front_opponent(); 
 
         current_time = nSysTime;
         sp_time_elapsed = current_time - starting_sp_time - total_boundary_time;

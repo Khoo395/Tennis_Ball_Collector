@@ -20,7 +20,7 @@ void moving_forward()
         {
             avoid_boundaries(line_sensor_status);
         }
-        avoid_opponent();
+        avoid_front_opponent();
     }
     stop_motor();
     ball_found = 0;
